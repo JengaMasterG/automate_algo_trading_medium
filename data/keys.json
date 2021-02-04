@@ -1,0 +1,20 @@
+{
+    "Alpaca":
+    {
+        "paper":
+        {
+            "url": "https://paper-api.alpaca.markets",
+            "API_KEY_ID": "PKT4D09N6JSC7322POOE",
+            "API_SECRET_KEY": "YQeODyLJRq2qnOOvl1zlhOCaQyZ8V7BbWCwVx19V"
+        },
+        "live":
+        {
+            "url": "https://api.alpaca.markets",
+            "API_KEY_ID": "AKLHTHSP5F76FHASSCTX",
+            "API_SECRET_KEY": ""
+        }
+    },
+    "Discord":{
+
+    }
+}

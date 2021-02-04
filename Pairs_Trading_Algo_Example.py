@@ -5,13 +5,15 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-
-def pairs_trading_algo(self):
+def pairs_trading_algo(url, api_key, api_secret):
+    api_url = url
+    key_id = api_key
+    secret = api_secret
     
     #Specify paper trading environment 
-    os.environ["APCA_API_BASE_URL"] = "https://paper-api.alpaca.markets"
+    os.environ["APCA_API_BASE_URL"] = api_url
     #Insert API Credentials 
-    api = tradeapi.REST('API_KEY_ID', 'API_SECRET_KEY', api_version='v2') # or use ENV Vars shown below
+    api = tradeapi.REST(key_id, secret, api_version='v2') # or use ENV Vars shown below
     account = api.get_account()
     
     #-----OPTIONAL-----CHANGING FOR DISCORD BOT---
@@ -27,7 +29,7 @@ def pairs_trading_algo(self):
     
     #Selection of stocks
     days = 1000
-    stock1 = 'TM' #Toyota
+    stock1 = 'GOOGL' #Alphabet (Google)
     stock2 = 'AAPL' #Apple
     #Put Hisrorical Data into variables
     stock1_barset = api.get_barset(stock1,'day',limit=days)
@@ -57,6 +59,7 @@ def pairs_trading_algo(self):
     stock1_curr = data_1[days-1]
     stock2_curr = data_2[days-1]
     spread_curr = (stock1_curr-stock2_curr)
+    print("Current Spread: " + str(spread_curr))
     #Moving Average of the two stocks
     move_avg_days = 5
     #Moving averge for stock1
@@ -75,10 +78,13 @@ def pairs_trading_algo(self):
     stock2_mavg = stock2_hist.mean()
     #Sread_avg
     spread_avg = min(stock1_mavg - stock2_mavg)
+    print(spread_avg)
     #Spread_factor
     spreadFactor = .01
     wideSpread = spread_avg*(1+spreadFactor)
     thinSpread = spread_avg*(1-spreadFactor)
+    print("Wide Spread: " + str(wideSpread))
+    print("Thin Spread: " + str(thinSpread))
     #Calc_of_shares_to_trade
     cash = float(account.buying_power)
     limit_stock1 = cash//stock1_curr
@@ -97,14 +103,16 @@ def pairs_trading_algo(self):
                 api.submit_order(symbol = stock1,qty = number_of_shares,side = 'sell',type = 'market',time_in_force ='day')
                 #Long bottom stock
                 api.submit_order(symbol = stock2,qty = number_of_shares,side = 'buy',type = 'market',time_in_force = 'day')
-                mail_content = "Trades have been made, short top stock and long bottom stock"
+                #mail_content = "Trades have been made, short top stock and long bottom stock"
+                print("Trades have been made, short top long bottom")
             #detect a tight spread
             elif spread_curr < thinSpread:
                 #long top stock
                 api.submit_order(symbol = stock1,qty = number_of_shares,side = 'buy',type = 'market',time_in_force = 'day')
                 #short bottom stock
                 api.submit_order(symbol = stock2,qty = number_of_shares,side = 'sell',type = 'market',time_in_force ='day')
-                mail_content = "Trades have been made, long top stock and short bottom stock"
+                #mail_content = "Trades have been made, long top stock and short bottom stock"
+                print("Trades have been made, long top short bottom")
         else:
             wideTradeSpread = spread_avg *(1+spreadFactor + .03)
             thinTradeSpread = spread_avg *(1+spreadFactor - .03)
@@ -112,10 +120,16 @@ def pairs_trading_algo(self):
                 api.close_position(stock1)
                 api.close_position(stock2)
                 #mail_content = "Position has been closed"
+                print("position closed")
             else:
                 #mail_content = "No trades were made, position remains open"
+                print("Position open")
                 pass
+        
+        return True
+
     else:
+        print("Market Closed")
         #mail_content = "The Market is Closed"
         
     #-----OPTIONAL-----CHANGING FOR DISCORD BOT---
@@ -129,6 +143,8 @@ def pairs_trading_algo(self):
     #session.sendmail(sender_address, receiver_address, text)
     #session.quit()
     
-    done = 'Mail Sent'
+    #done = 'Mail Sent'
 
-    return done
+    print("done")
+
+    return False
