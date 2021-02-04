@@ -14,20 +14,21 @@ def pairs_trading_algo(self):
     api = tradeapi.REST('API_KEY_ID', 'API_SECRET_KEY', api_version='v2') # or use ENV Vars shown below
     account = api.get_account()
     
+    #-----OPTIONAL-----CHANGING FOR DISCORD BOT---
     #The mail addresses and password
-    sender_address = 'trading.algo15@gmail.com'
-    sender_pass = '**********'
-    receiver_address = 'mcklayne.marshall@gmail.com'
+    #sender_address = 'trading.algo15@gmail.com'
+    #sender_pass = '**********'
+    #receiver_address = 'mcklayne.marshall@gmail.com'
     #Setup the MIME
-    message = MIMEMultipart()
-    message['From'] = 'Trading Bot'
-    message['To'] = receiver_address
-    message['Subject'] = 'Pairs Trading Algo'   #The subject line
+    #message = MIMEMultipart()
+    #message['From'] = 'Trading Bot'
+    #message['To'] = receiver_address
+    #message['Subject'] = 'Pairs Trading Algo'   #The subject line
     
     #Selection of stocks
     days = 1000
-    stock1 = 'ADBE'
-    stock2 = 'AAPL'
+    stock1 = 'TM' #Toyota
+    stock2 = 'AAPL' #Apple
     #Put Hisrorical Data into variables
     stock1_barset = api.get_barset(stock1,'day',limit=days)
     stock2_barset = api.get_barset(stock2,'day',limit=days)
@@ -110,22 +111,23 @@ def pairs_trading_algo(self):
             if spread_curr <= wideTradeSpread and spread_curr >=thinTradeSpread:
                 api.close_position(stock1)
                 api.close_position(stock2)
-                mail_content = "Position has been closed"
+                #mail_content = "Position has been closed"
             else:
-                mail_content = "No trades were made, position remains open"
+                #mail_content = "No trades were made, position remains open"
                 pass
     else:
-        mail_content = "The Market is Closed"
+        #mail_content = "The Market is Closed"
         
+    #-----OPTIONAL-----CHANGING FOR DISCORD BOT---
     #The body and the attachments for the mail
-    message.attach(MIMEText(mail_content, 'plain'))
+    #message.attach(MIMEText(mail_content, 'plain'))
     #Create SMTP session for sending the mail
-    session = smtplib.SMTP('smtp.gmail.com', 587) #use gmail with port
-    session.starttls() #enable security
-    session.login(sender_address, sender_pass) #login with mail_id and password
-    text = message.as_string()
-    session.sendmail(sender_address, receiver_address, text)
-    session.quit()
+    #session = smtplib.SMTP('smtp.gmail.com', 587) #use gmail with port
+    #session.starttls() #enable security
+    #session.login(sender_address, sender_pass) #login with mail_id and password
+    #text = message.as_string()
+    #session.sendmail(sender_address, receiver_address, text)
+    #session.quit()
     
     done = 'Mail Sent'
 
